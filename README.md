@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GitHub Gist Access API
 
-## Getting Started
+A Next.js serverless API for accessing GitHub Gists with authentication to avoid rate limits. This application provides two endpoints for checking gist existence and loading gist files.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Rate Limit Bypass**: Uses GitHub personal access token for authenticated requests
+- **CORS Support**: Configured for `https://stan-playground.flatironinstitute.org` and localhost development
+- **TypeScript**: Full type safety throughout the application
+- **Vercel Ready**: Optimized for serverless deployment
+
+## API Endpoints
+
+### POST `/api/gist/exists`
+
+Checks if a GitHub Gist exists.
+
+**Request Body:**
+```json
+{
+  "gistUri": "https://gist.github.com/username/gist-id"
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Response:**
+```json
+{
+  "exists": true
+}
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### POST `/api/gist/load`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Loads files and description from a GitHub Gist.
 
-## Learn More
+**Request Body:**
+```json
+{
+  "gistUri": "https://gist.github.com/username/gist-id"
+}
+```
 
-To learn more about Next.js, take a look at the following resources:
+**Response:**
+```json
+{
+  "files": {
+    "filename.js": "file content here",
+    "another-file.md": "more content"
+  },
+  "description": "Gist description"
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Prerequisites
 
-## Deploy on Vercel
+- Node.js 18+ 
+- Vercel CLI (`npm i -g vercel`)
+- GitHub Personal Access Token
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### GitHub Token Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Generate a new token with the following scopes:
+   - `gist` (for accessing gists)
+3. Copy the token for use in environment variables
+
+### Development
+
+1. Clone this repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variable in Vercel:
+   ```bash
+   vercel env add GITHUB_TOKEN
+   ```
+   Enter your GitHub personal access token when prompted.
+
+4. Start development server:
+   ```bash
+   vercel dev
+   ```
+
+The API will be available at `http://localhost:3000/api/gist/`
+
+### Deployment
+
+Deploy to production:
+```bash
+vercel --prod
+```
+
+Make sure the `GITHUB_TOKEN` environment variable is set in your Vercel project settings.
+
+## CORS Configuration
+
+The API is configured to accept requests from:
+- `https://stan-playground.flatironinstitute.org`
+- `http://localhost:*` (any port for development)
+- `https://localhost:*` (any port for HTTPS development)
+
+## Error Handling
+
+The API provides detailed error responses:
+
+- `400`: Bad request (missing or invalid gistUri)
+- `403`: Access forbidden (private gist or insufficient permissions)
+- `404`: Gist not found
+- `500`: Server error (missing token or internal error)
+
+## Usage Example
+
+```javascript
+// Check if gist exists
+const existsResponse = await fetch('/api/gist/exists', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    gistUri: 'https://gist.github.com/username/gist-id'
+  })
+});
+const { exists } = await existsResponse.json();
+
+// Load gist files
+const loadResponse = await fetch('/api/gist/load', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    gistUri: 'https://gist.github.com/username/gist-id'
+  })
+});
+const { files, description } = await loadResponse.json();
+```
+
+## Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `GITHUB_TOKEN` | GitHub Personal Access Token with gist scope | Yes |
+
+## License
+
+MIT
