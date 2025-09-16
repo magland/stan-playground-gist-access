@@ -6,13 +6,21 @@ const allowedOrigins = [
   'https://stan-playground.flatironinstitute.org',
   'http://localhost:3000',
   'https://localhost:3000',
-  /^http:\/\/localhost:\d+$/,
-  /^https:\/\/localhost:\d+$/,
+  'http://127.0.0.1:3000',
+  'https://127.0.0.1:3000'
+];
+
+const allowedPrefixes = [
+  'http://localhost:',
+  'https://localhost:',
+  'http://127.0.0.1:',
+  'https://127.0.0.1:'
 ];
 
 function getCorsHeaders(origin: string | null) {
-  const isAllowed = origin && allowedOrigins.some(allowed => 
-    typeof allowed === 'string' ? allowed === origin : allowed.test(origin)
+  const isAllowed = origin && (
+    allowedOrigins.includes(origin) ||
+    allowedPrefixes.some(prefix => origin.startsWith(prefix))
   );
   
   return {
