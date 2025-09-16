@@ -1,151 +1,54 @@
 # GitHub Gist Access API
 
-A Next.js serverless API for accessing GitHub Gists with authentication to avoid rate limits. This application provides two endpoints for checking gist existence and loading gist files.
-
-## Features
-
-- **Rate Limit Bypass**: Uses GitHub personal access token for authenticated requests
-- **CORS Support**: Configured for `https://stan-playground.flatironinstitute.org` and localhost development
-- **TypeScript**: Full type safety throughout the application
-- **Vercel Ready**: Optimized for serverless deployment
+Next.js serverless API for accessing GitHub Gists with authentication.
 
 ## API Endpoints
 
 ### POST `/api/gist/exists`
-
-Checks if a GitHub Gist exists.
-
-**Request Body:**
+Check if a gist exists:
 ```json
 {
   "gistUri": "https://gist.github.com/username/gist-id"
-}
-```
-
-**Response:**
-```json
-{
-  "exists": true
 }
 ```
 
 ### POST `/api/gist/load`
-
-Loads files and description from a GitHub Gist.
-
-**Request Body:**
+Load gist files and description:
 ```json
 {
   "gistUri": "https://gist.github.com/username/gist-id"
 }
 ```
 
-**Response:**
-```json
-{
-  "files": {
-    "filename.js": "file content here",
-    "another-file.md": "more content"
-  },
-  "description": "Gist description"
-}
-```
+## Quick Start
 
-## Setup
-
-### Prerequisites
-
-- Node.js 18+ 
-- Vercel CLI (`npm i -g vercel`)
-- GitHub Personal Access Token
-
-### GitHub Token Setup
-
-1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. Generate a new token with the following scopes:
-   - `gist` (for accessing gists)
-3. Copy the token for use in environment variables
-
-### Development
-
-1. Clone this repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Set up environment variable in Vercel:
-   ```bash
-   vercel env add GITHUB_TOKEN
-   ```
-   Enter your GitHub personal access token when prompted.
-
-4. Start development server:
-   ```bash
-   vercel dev
-   ```
-
-The API will be available at `http://localhost:3000/api/gist/`
-
-### Deployment
-
-Deploy to production:
+1. Install dependencies:
 ```bash
-vercel --prod
+npm install
 ```
 
-Make sure the `GITHUB_TOKEN` environment variable is set in your Vercel project settings.
+2. Set GitHub token:
+- Create a GitHub personal access token with `gist` scope
+- Add it to Vercel:
+```bash
+vercel env add GITHUB_TOKEN
+```
 
-## CORS Configuration
+3. Run development server:
+```bash
+vercel dev
+```
 
-The API is configured to accept requests from:
+## CORS Support
 - `https://stan-playground.flatironinstitute.org`
-- `http://localhost:*` (any port for development)
-- `https://localhost:*` (any port for HTTPS development)
+- `http://localhost:*` and `https://localhost:*`
+- `http://127.0.0.1:*` and `https://127.0.0.1:*`
 
-## Error Handling
-
-The API provides detailed error responses:
-
-- `400`: Bad request (missing or invalid gistUri)
-- `403`: Access forbidden (private gist or insufficient permissions)
+## Error Codes
+- `400`: Bad request
+- `403`: Access forbidden
 - `404`: Gist not found
-- `500`: Server error (missing token or internal error)
-
-## Usage Example
-
-```javascript
-// Check if gist exists
-const existsResponse = await fetch('/api/gist/exists', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    gistUri: 'https://gist.github.com/username/gist-id'
-  })
-});
-const { exists } = await existsResponse.json();
-
-// Load gist files
-const loadResponse = await fetch('/api/gist/load', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    gistUri: 'https://gist.github.com/username/gist-id'
-  })
-});
-const { files, description } = await loadResponse.json();
-```
-
-## Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `GITHUB_TOKEN` | GitHub Personal Access Token with gist scope | Yes |
+- `500`: Server error
 
 ## License
-
 MIT
