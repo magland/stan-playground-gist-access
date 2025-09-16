@@ -39,6 +39,10 @@ vercel env add GITHUB_TOKEN
 vercel dev
 ```
 
+## Test commands
+
+See [test-commands.md](test-commands.md) for curl commands to test the API endpoints.
+
 ## CORS Support
 - `https://stan-playground.flatironinstitute.org`
 - `http://localhost:*` and `https://localhost:*`
