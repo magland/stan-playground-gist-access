@@ -4,6 +4,8 @@ import { Octokit } from '@octokit/rest';
 // CORS configuration
 const allowedOrigins = [
   'https://stan-playground.flatironinstitute.org',
+  'https://magland.github.io',
+  'https://flatironinstitute.github.io',
   'http://localhost:3000',
   'https://localhost:3000',
   'http://127.0.0.1:3000',
